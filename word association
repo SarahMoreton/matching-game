@@ -1,0 +1,142 @@
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+
+// Helper shuffle
+const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+const makeLevel = (pairs) => ({
+  left: shuffle(pairs),
+  right: shuffle(pairs)
+});
+
+const data = {
+  easy: [
+    { id: 1, left: "Shoes", right: "Socks" },
+    { id: 2, left: "Toothbrush", right: "Toothpaste" },
+    { id: 3, left: "Rain", right: "Umbrella" },
+    { id: 4, left: "Dog", right: "Bone" },
+    { id: 5, left: "Pen", right: "Paper" },
+    { id: 6, left: "Cup", right: "Saucer" },
+    { id: 7, left: "Bed", right: "Pillow" },
+    { id: 8, left: "Car", right: "Road" },
+    { id: 9, left: "Knife", right: "Fork" },
+    { id: 10, left: "Lock", right: "Key" }
+  ],
+  medium: [
+    { id: 11, left: "School", right: "Bag" },
+    { id: 12, left: "Classroom", right: "Desk" },
+    { id: 13, left: "Playground", right: "Ball" },
+    { id: 14, left: "Teacher", right: "Student" },
+    { id: 15, left: "Lunchbox", right: "Food" },
+    { id: 16, left: "Library", right: "Books" },
+    { id: 17, left: "Home", right: "Sofa" },
+    { id: 18, left: "Bathroom", right: "Soap" },
+    { id: 19, left: "Kitchen", right: "Fridge" },
+    { id: 20, left: "Bike", right: "Helmet" }
+  ],
+  hard: [
+    { id: 21, left: "Sun", right: "Moon" },
+    { id: 22, left: "Fire", right: "Smoke" },
+    { id: 23, left: "Question", right: "Answer" },
+    { id: 24, left: "Day", right: "Night" },
+    { id: 25, left: "Hot", right: "Cold" },
+    { id: 26, left: "Buy", right: "Sell" },
+    { id: 27, left: "Parent", right: "Child" },
+    { id: 28, left: "Open", right: "Close" },
+    { id: 29, left: "Before", right: "After" },
+    { id: 30, left: "Give", right: "Take" }
+  ]
+};
+
+export default function Game() {
+  const [level, setLevel] = useState("easy");
+  const [board, setBoard] = useState(makeLevel(data.easy));
+  const [dragItem, setDragItem] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    setBoard(makeLevel(data[level]));
+    setMatches([]);
+    setFeedback("");
+  }, [level]);
+
+  const playSuccess = () => new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play();
+  const playError = () => new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg").play();
+
+  const handleDrop = (target) => {
+    if (!dragItem) return;
+
+    if (dragItem.id === target.id) {
+      setMatches([...matches, dragItem.id]);
+      setFeedback("✅ Ka pai! Correct match!");
+      playSuccess();
+    } else {
+      setFeedback("❌ Try again — think about what goes together.");
+      playError();
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <h1 className="text-3xl font-bold">🎯 Matching Game</h1>
+
+      <div className="flex gap-2">
+        {Object.keys(data).map((lvl) => (
+          <button
+            key={lvl}
+            onClick={() => setLevel(lvl)}
+            className="px-4 py-2 bg-blue-300 rounded-xl">
+            {lvl.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      <div className="text-lg font-semibold">{feedback}</div>
+
+      <div className="grid grid-cols-2 gap-6">
+        {/* LEFT draggable */}
+        <div className="space-y-2">
+          {board.left.map((item) => (
+            <motion.div
+              key={item.id}
+              draggable
+              onDragStart={() => setDragItem(item)}
+              className={`p-3 rounded-xl shadow cursor-grab bg-white ${matches.includes(item.id) && "opacity-40"}`}>
+              {item.left}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* RIGHT drop targets */}
+        <div className="space-y-2">
+          {board.right.map((item) => (
+            <div
+              key={item.id}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleDrop(item)}
+              className={`p-3 rounded-xl border-2 min-h-[40px] ${matches.includes(item.id) ? "bg-green-200" : "bg-gray-100"}`}>
+              {matches.includes(item.id) ? `✅ ${item.right}` : item.right}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {matches.length === data[level].length && (
+        <div className="p-4 bg-green-300 rounded-xl text-center font-bold">
+          🎉 All matched! Ka pai! 🎉
+        </div>
+      )}
+
+      {/* PRINTABLE VERSION */}
+      <div className="mt-6 p-4 border rounded-xl">
+        <h2 className="text-xl font-bold">🖨 Printable / Whiteboard Version</h2>
+        <ul className="list-disc pl-5">
+          {data[level].map((p) => (
+            <li key={p.id}>{p.left} ↔ __________ ({p.right})</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
