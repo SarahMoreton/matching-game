@@ -22,11 +22,11 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             width: 100%;
             background: white;
             border-radius: 25px;
-            padding: 50px;
+            padding: 40px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
         }
 
@@ -110,26 +110,59 @@
         .items {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
-        .draggable {
-            padding: 18px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            color: white;
-            font-weight: bold;
-            font-size: 1.2em;
+        .card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
             cursor: grab;
             user-select: none;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-            border: 3px solid transparent;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:active {
+            cursor: grabbing;
+        }
+
+        .card.matched {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .draggable {
+            cursor: grab;
+            transition: transform 0.2s ease;
         }
 
         .draggable:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
         }
 
         .draggable:active {
@@ -137,30 +170,21 @@
             transform: scale(0.95);
         }
 
-        .draggable.matched {
-            opacity: 0.25;
-            cursor: not-allowed;
-            background: linear-gradient(135deg, #c1c1c1, #a0a0a0);
-        }
-
         .drop-zone {
-            padding: 18px;
-            border-radius: 12px;
-            border: 3px dashed #ccc;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 15px;
+            border: 4px dashed #ccc;
             background: #f9fafb;
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #333;
-            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
         }
 
         .drop-zone:hover {
-            background: #f3f4f6;
             border-color: #b0b0b0;
         }
 
@@ -168,17 +192,37 @@
             background: linear-gradient(135deg, #e0f2fe, #cffafe);
             border-color: #0284c7;
             border-style: solid;
-            box-shadow: 0 0 20px rgba(2, 132, 199, 0.3);
-            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(2, 132, 199, 0.4);
+            transform: scale(1.03);
         }
 
         .drop-zone.matched {
-            background: linear-gradient(135deg, #bbf7d0, #86efac);
-            border-color: #22c55e;
-            border-style: solid;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
-            color: #15803d;
+            border: 4px solid #22c55e;
+            background: #bbf7d0;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .drop-zone-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .drop-zone.matched .drop-zone-image {
+            display: block;
+        }
+
+        .drop-zone-label {
+            position: absolute;
+            text-align: center;
             font-weight: bold;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .drop-zone.matched .drop-zone-label {
+            display: none;
         }
 
         .completion {
@@ -217,7 +261,7 @@
                 font-size: 2.5em;
             }
             .container {
-                padding: 30px;
+                padding: 20px;
             }
         }
     </style>
@@ -252,40 +296,40 @@
     <script>
         const gameData = {
             easy: [
-                { id: 1, left: "👟 Shoes", right: "🧦 Socks" },
-                { id: 2, left: "🪥 Toothbrush", right: "😁 Toothpaste" },
-                { id: 3, left: "☔ Rain", right: "☂️ Umbrella" },
-                { id: 4, left: "🐕 Dog", right: "🦴 Bone" },
-                { id: 5, left: "✏️ Pen", right: "📄 Paper" },
-                { id: 6, left: "☕ Cup", right: "🛏️ Saucer" },
-                { id: 7, left: "🛏️ Bed", right: "🛌 Pillow" },
-                { id: 8, left: "🚗 Car", right: "🛣️ Road" },
-                { id: 9, left: "🔪 Knife", right: "🍴 Fork" },
-                { id: 10, left: "🔐 Lock", right: "🔑 Key" }
+                { id: 1, left: "Shoes", right: "Socks", leftImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop" },
+                { id: 2, left: "Toothbrush", right: "Toothpaste", leftImg: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1607945591411-07134e71a2a9?w=300&h=300&fit=crop" },
+                { id: 3, left: "Rain", right: "Umbrella", leftImg: "https://images.unsplash.com/photo-1519692712057-3b5631b60eda?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1523634030851-78292e385706?w=300&h=300&fit=crop" },
+                { id: 4, left: "Dog", right: "Bone", leftImg: "https://images.unsplash.com/photo-1633722715463-d30628519d84?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1572516675821-3bd3e19b6e16?w=300&h=300&fit=crop" },
+                { id: 5, left: "Pen", right: "Paper", leftImg: "https://images.unsplash.com/photo-1578992414033-01f7a6c85dd9?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=300&fit=crop" },
+                { id: 6, left: "Cup", right: "Saucer", leftImg: "https://images.unsplash.com/photo-1517701550927-30cf4ba20d4d?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1563428318-d2de6cf15a0f?w=300&h=300&fit=crop" },
+                { id: 7, left: "Bed", right: "Pillow", leftImg: "https://images.unsplash.com/photo-1505693314967-be8bb8c58b18?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1584622181563-430f63602d4b?w=300&h=300&fit=crop" },
+                { id: 8, left: "Car", right: "Road", leftImg: "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=300&h=300&fit=crop" },
+                { id: 9, left: "Knife", right: "Fork", leftImg: "https://images.unsplash.com/photo-1578695959904-dc4a8ccade1b?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1595521624185-f5e60bf11bba?w=300&h=300&fit=crop" },
+                { id: 10, left: "Lock", right: "Key", leftImg: "https://images.unsplash.com/photo-1580456053570-d50b4265e29d?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=300&h=300&fit=crop" }
             ],
             medium: [
-                { id: 11, left: "🏫 School", right: "🎒 Bag" },
-                { id: 12, left: "🏫 Classroom", right: "📚 Desk" },
-                { id: 13, left: "🎪 Playground", right: "⚽ Ball" },
-                { id: 14, left: "👨‍🏫 Teacher", right: "👨‍🎓 Student" },
-                { id: 15, left: "🍱 Lunchbox", right: "🍎 Food" },
-                { id: 16, left: "📚 Library", right: "📖 Books" },
-                { id: 17, left: "🏠 Home", right: "🛋️ Sofa" },
-                { id: 18, left: "🚿 Bathroom", right: "🧼 Soap" },
-                { id: 19, left: "🍳 Kitchen", right: "🧊 Fridge" },
-                { id: 20, left: "🚲 Bike", right: "🪖 Helmet" }
+                { id: 11, left: "School", right: "Bag", leftImg: "https://images.unsplash.com/photo-1427504494636-20ede2a379a0?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop" },
+                { id: 12, left: "Classroom", right: "Desk", leftImg: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=300&h=300&fit=crop" },
+                { id: 13, left: "Playground", right: "Ball", leftImg: "https://images.unsplash.com/photo-1540575467063-178f50002311?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=300&h=300&fit=crop" },
+                { id: 14, left: "Teacher", right: "Student", leftImg: "https://images.unsplash.com/photo-1544717278-ca5e3af8abd8?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=300&fit=crop" },
+                { id: 15, left: "Lunchbox", right: "Food", leftImg: "https://images.unsplash.com/photo-1587786405128-e73c0a4b3028?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop" },
+                { id: 16, left: "Library", right: "Books", leftImg: "https://images.unsplash.com/photo-150784272343-583f20270319?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=300&h=300&fit=crop" },
+                { id: 17, left: "Home", right: "Sofa", leftImg: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&h=300&fit=crop" },
+                { id: 18, left: "Bathroom", right: "Soap", leftImg: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1598405867952-b8d1b63d913d?w=300&h=300&fit=crop" },
+                { id: 19, left: "Kitchen", right: "Fridge", leftImg: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1584622181563-430f63602d4b?w=300&h=300&fit=crop" },
+                { id: 20, left: "Bike", right: "Helmet", leftImg: "https://images.unsplash.com/photo-1555147541-2ec63f56e718?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1576425752846-d8269d373268?w=300&h=300&fit=crop" }
             ],
             hard: [
-                { id: 21, left: "☀️ Sun", right: "🌙 Moon" },
-                { id: 22, left: "🔥 Fire", right: "💨 Smoke" },
-                { id: 23, left: "❓ Question", right: "✅ Answer" },
-                { id: 24, left: "🌅 Day", right: "🌙 Night" },
-                { id: 25, left: "🔥 Hot", right: "❄️ Cold" },
-                { id: 26, left: "🛒 Buy", right: "💰 Sell" },
-                { id: 27, left: "👨‍👩‍👧 Parent", right: "👧 Child" },
-                { id: 28, left: "🔓 Open", right: "🔒 Close" },
-                { id: 29, left: "⏪ Before", right: "⏩ After" },
-                { id: 30, left: "🎁 Give", right: "🤲 Take" }
+                { id: 21, left: "Sun", right: "Moon", leftImg: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=300&h=300&fit=crop" },
+                { id: 22, left: "Fire", right: "Smoke", leftImg: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=300&h=300&fit=crop" },
+                { id: 23, left: "Question", right: "Answer", leftImg: "https://images.unsplash.com/photo-1516979187457-635ffe35ff15?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=300&fit=crop" },
+                { id: 24, left: "Day", right: "Night", leftImg: "https://images.unsplash.com/photo-1495562569060-2b7279351cac?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&h=300&fit=crop" },
+                { id: 25, left: "Hot", right: "Cold", leftImg: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1517938753464-5618bc2830fc?w=300&h=300&fit=crop" },
+                { id: 26, left: "Buy", right: "Sell", leftImg: "https://images.unsplash.com/photo-1555636222-cae831c7a47f?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1557821552-17105176677c?w=300&h=300&fit=crop" },
+                { id: 27, left: "Parent", right: "Child", leftImg: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1503454537688-e47546fe5188?w=300&h=300&fit=crop" },
+                { id: 28, left: "Open", right: "Close", leftImg: "https://images.unsplash.com/photo-1533357489199-f8466ab73fea?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1533694352444-78bb66068463?w=300&h=300&fit=crop" },
+                { id: 29, left: "Before", right: "After", leftImg: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1495562569060-2b7279351cac?w=300&h=300&fit=crop" },
+                { id: 30, left: "Give", right: "Take", leftImg: "https://images.unsplash.com/photo-1576091160550-112173f31c77?w=300&h=300&fit=crop", rightImg: "https://images.unsplash.com/photo-1552817632-5b53e1faa6d4?w=300&h=300&fit=crop" }
             ]
         };
 
@@ -306,19 +350,24 @@
             const leftItems = shuffle([...pairs]);
             const rightItems = shuffle([...pairs]);
 
-            // Render left (draggable)
+            // Render left (draggable with images)
             const leftContainer = document.getElementById("left-items");
             leftContainer.innerHTML = "";
             leftItems.forEach(item => {
                 const div = document.createElement("div");
-                div.className = "draggable";
-                div.textContent = item.left;
-                div.draggable = true;
+                div.className = "card draggable";
                 div.dataset.id = item.id;
+                div.draggable = true;
+
+                div.innerHTML = `
+                    <img class="card-image" src="${item.leftImg}" alt="${item.left}">
+                    <div class="card-label">${item.left}</div>
+                `;
 
                 div.addEventListener("dragstart", (e) => {
                     draggedItem = item;
                     e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setDragImage(div, 0, 0);
                 });
 
                 div.addEventListener("dragend", (e) => {
@@ -328,14 +377,18 @@
                 leftContainer.appendChild(div);
             });
 
-            // Render right (drop zones)
+            // Render right (drop zones with images for matched)
             const rightContainer = document.getElementById("right-items");
             rightContainer.innerHTML = "";
             rightItems.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "drop-zone";
-                div.textContent = item.right;
                 div.dataset.id = item.id;
+
+                div.innerHTML = `
+                    <img class="drop-zone-image" src="${item.rightImg}" alt="${item.right}">
+                    <div class="drop-zone-label">${item.right}</div>
+                `;
 
                 div.addEventListener("dragover", (e) => {
                     e.preventDefault();
@@ -386,12 +439,8 @@
             document.querySelectorAll(".drop-zone").forEach(el => {
                 if (matches.includes(parseInt(el.dataset.id))) {
                     el.classList.add("matched");
-                    const item = gameData[currentLevel].find(p => p.id == el.dataset.id);
-                    el.textContent = "✅ " + item.right;
                 } else {
                     el.classList.remove("matched");
-                    const item = gameData[currentLevel].find(p => p.id == el.dataset.id);
-                    el.textContent = item.right;
                 }
             });
 
