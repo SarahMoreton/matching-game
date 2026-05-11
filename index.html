@@ -4,57 +4,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎯 Matching Game</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-        }
-        .game-container {
-            max-width: 900px;
-            margin: 0 auto;
             padding: 20px;
         }
-        .draggable {
-            cursor: grab;
-            transition: all 0.2s;
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .level-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-buttons button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #93c5fd;
+            color: #1e40af;
+            transition: all 0.3s;
+        }
+
+        .level-buttons button:hover {
+            background: #60a5fa;
+        }
+
+        .level-buttons button.active {
+            background: #2563eb;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fef3c7;
+            min-height: 50px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .column h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .draggable {
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         .draggable:active {
             cursor: grabbing;
             opacity: 0.8;
         }
+
+        .draggable.matched {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
         .drop-zone {
-            min-height: 50px;
+            padding: 15px;
+            border-radius: 10px;
             border: 2px dashed #ccc;
+            background: #f9fafb;
+            font-weight: bold;
+            font-size: 1.1em;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
             transition: all 0.3s;
         }
+
         .drop-zone.drag-over {
-            background-color: #e0f2fe;
+            background: #e0f2fe;
             border-color: #0284c7;
+            border-style: solid;
         }
-        .matched {
-            background-color: #86efac !important;
-            border-color: #22c55e !important;
+
+        .drop-zone.matched {
+            background: #bbf7d0;
+            border-color: #22c55e;
+            border-style: solid;
+        }
+
+        .completion {
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            color: white;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            display: none;
+        }
+
+        .completion.show {
+            display: block;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <div class="container">
+        <h1>🎯 Matching Game</h1>
 
-        const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+        <div class="level-buttons">
+            <button class="level-btn active" data-level="easy">EASY</button>
+            <button class="level-btn" data-level="medium">MEDIUM</button>
+            <button class="level-btn" data-level="hard">HARD</button>
+        </div>
 
-        const makeLevel = (pairs) => ({
-            left: shuffle(pairs),
-            right: shuffle(pairs.map(p => ({ ...p })))
-        });
+        <div class="feedback" id="feedback"></div>
 
-        const data = {
+        <div class="game-area">
+            <div class="column">
+                <h2>Drag from here:</h2>
+                <div class="items" id="left-items"></div>
+            </div>
+
+            <div class="column">
+                <h2>Drop here:</h2>
+                <div class="items" id="right-items"></div>
+            </div>
+        </div>
+
+        <div class="completion" id="completion">🎉 All matched! Ka pai! 🎉</div>
+    </div>
+
+    <script>
+        const gameData = {
             easy: [
                 { id: 1, left: "Shoes", right: "Socks" },
                 { id: 2, left: "Toothbrush", right: "Toothpaste" },
@@ -93,130 +244,143 @@
             ]
         };
 
-        function Game() {
-            const [level, setLevel] = useState("easy");
-            const [board, setBoard] = useState(makeLevel(data.easy));
-            const [dragItem, setDragItem] = useState(null);
-            const [matches, setMatches] = useState([]);
-            const [feedback, setFeedback] = useState("");
-            const [dragOver, setDragOver] = useState(null);
+        let currentLevel = "easy";
+        let draggedItem = null;
+        let matches = [];
 
-            useEffect(() => {
-                setBoard(makeLevel(data[level]));
-                setMatches([]);
-                setFeedback("");
-            }, [level]);
-
-            const playSuccess = () => {
-                const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-                audio.play().catch(() => {});
-            };
-
-            const playError = () => {
-                const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-                audio.play().catch(() => {});
-            };
-
-            const handleDrop = (target) => {
-                if (!dragItem) return;
-
-                if (dragItem.id === target.id) {
-                    setMatches([...matches, dragItem.id]);
-                    setFeedback("✅ Ka pai! Correct match!");
-                    playSuccess();
-                } else {
-                    setFeedback("❌ Try again — think about what goes together.");
-                    playError();
-                }
-                setDragItem(null);
-                setDragOver(null);
-            };
-
-            return (
-                <div className="game-container">
-                    <div className="bg-white rounded-2xl shadow-2xl p-8">
-                        <h1 className="text-5xl font-bold text-center mb-6">🎯 Matching Game</h1>
-
-                        <div className="flex justify-center gap-3 mb-6">
-                            {Object.keys(data).map((lvl) => (
-                                <button
-                                    key={lvl}
-                                    onClick={() => setLevel(lvl)}
-                                    className={`px-6 py-3 rounded-xl font-bold text-lg transition-all ${
-                                        level === lvl
-                                            ? "bg-blue-600 text-white scale-110"
-                                            : "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                                    }`}
-                                >
-                                    {lvl.toUpperCase()}
-                                </button>
-                            ))}
-                        </div>
-
-                        {feedback && (
-                            <div className="text-center text-2xl font-bold mb-6 p-3 bg-yellow-100 rounded-lg">
-                                {feedback}
-                            </div>
-                        )}
-
-                        <div className="grid grid-cols-2 gap-8 mb-6">
-                            {/* LEFT - Draggable Items */}
-                            <div>
-                                <h2 className="text-xl font-bold mb-4 text-gray-700">Drag from here:</h2>
-                                <div className="space-y-3">
-                                    {board.left.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            draggable
-                                            onDragStart={() => setDragItem(item)}
-                                            onDragEnd={() => setDragItem(null)}
-                                            className={`draggable p-4 rounded-xl shadow-lg bg-gradient-to-r from-blue-400 to-blue-500 text-white font-bold text-lg ${
-                                                matches.includes(item.id) ? "opacity-30 cursor-not-allowed" : ""
-                                            }`}
-                                        >
-                                            {item.left}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* RIGHT - Drop Targets */}
-                            <div>
-                                <h2 className="text-xl font-bold mb-4 text-gray-700">Drop here:</h2>
-                                <div className="space-y-3">
-                                    {board.right.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            onDragOver={(e) => {
-                                                e.preventDefault();
-                                                setDragOver(item.id);
-                                            }}
-                                            onDragLeave={() => setDragOver(null)}
-                                            onDrop={() => handleDrop(item)}
-                                            className={`drop-zone p-4 rounded-xl font-bold text-lg transition-all ${
-                                                matches.includes(item.id)
-                                                    ? "matched bg-green-200 border-green-500"
-                                                    : "border-gray-300 bg-gray-50"
-                                            } ${dragOver === item.id ? "drag-over" : ""}`}
-                                        >
-                                            {matches.includes(item.id) ? `✅ ${item.right}` : item.right}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {matches.length === data[level].length && matches.length > 0 && (
-                            <div className="p-6 bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-center font-bold text-2xl text-white">
-                                🎉 All matched! Ka pai! 🎉
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
+        function shuffle(arr) {
+            return [...arr].sort(() => Math.random() - 0.5);
         }
 
-        ReactDOM.render(<Game />, document.getElementById("root"));
+        function renderGame() {
+            matches = [];
+            document.getElementById("feedback").classList.remove("show");
+            document.getElementById("completion").classList.remove("show");
+
+            const pairs = gameData[currentLevel];
+            const leftItems = shuffle([...pairs]);
+            const rightItems = shuffle([...pairs]);
+
+            // Render left (draggable)
+            const leftContainer = document.getElementById("left-items");
+            leftContainer.innerHTML = "";
+            leftItems.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "draggable";
+                div.textContent = item.left;
+                div.draggable = true;
+                div.dataset.id = item.id;
+
+                div.addEventListener("dragstart", (e) => {
+                    draggedItem = item;
+                    div.style.opacity = "0.5";
+                });
+
+                div.addEventListener("dragend", (e) => {
+                    div.style.opacity = "1";
+                });
+
+                leftContainer.appendChild(div);
+            });
+
+            // Render right (drop zones)
+            const rightContainer = document.getElementById("right-items");
+            rightContainer.innerHTML = "";
+            rightItems.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "drop-zone";
+                div.textContent = item.right;
+                div.dataset.id = item.id;
+
+                div.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                    div.classList.add("drag-over");
+                });
+
+                div.addEventListener("dragleave", () => {
+                    div.classList.remove("drag-over");
+                });
+
+                div.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    div.classList.remove("drag-over");
+
+                    if (!draggedItem) return;
+
+                    if (draggedItem.id == item.id) {
+                        matches.push(item.id);
+                        showFeedback("✅ Ka pai! Correct match!", true);
+                        playSound(true);
+                        updateUI();
+                    } else {
+                        showFeedback("❌ Try again — think about what goes together.", false);
+                        playSound(false);
+                    }
+
+                    draggedItem = null;
+                });
+
+                rightContainer.appendChild(div);
+            });
+        }
+
+        function updateUI() {
+            const pairs = gameData[currentLevel];
+
+            // Update left items
+            document.querySelectorAll(".draggable").forEach(el => {
+                if (matches.includes(parseInt(el.dataset.id))) {
+                    el.classList.add("matched");
+                } else {
+                    el.classList.remove("matched");
+                }
+            });
+
+            // Update right items
+            document.querySelectorAll(".drop-zone").forEach(el => {
+                if (matches.includes(parseInt(el.dataset.id))) {
+                    el.classList.add("matched");
+                    const item = gameData[currentLevel].find(p => p.id == el.dataset.id);
+                    el.textContent = "✅ " + item.right;
+                } else {
+                    el.classList.remove("matched");
+                    const item = gameData[currentLevel].find(p => p.id == el.dataset.id);
+                    el.textContent = item.right;
+                }
+            });
+
+            // Check completion
+            if (matches.length === pairs.length) {
+                document.getElementById("completion").classList.add("show");
+            }
+        }
+
+        function showFeedback(message, isCorrect) {
+            const fb = document.getElementById("feedback");
+            fb.textContent = message;
+            fb.classList.add("show");
+            setTimeout(() => fb.classList.remove("show"), 2000);
+        }
+
+        function playSound(isCorrect) {
+            const url = isCorrect
+                ? "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+                : "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg";
+            new Audio(url).play().catch(() => {});
+        }
+
+        // Level button listeners
+        document.querySelectorAll(".level-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentLevel = btn.dataset.level;
+                renderGame();
+            });
+        });
+
+        // Initial render
+        renderGame();
     </script>
 </body>
 </html>
