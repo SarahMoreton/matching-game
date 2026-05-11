@@ -12,167 +12,212 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
+            max-width: 1000px;
+            width: 100%;
             background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
         }
 
         h1 {
             text-align: center;
-            font-size: 3em;
-            margin-bottom: 30px;
+            font-size: 4em;
+            margin-bottom: 40px;
             color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .level-buttons {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
         }
 
         .level-buttons button {
-            padding: 12px 24px;
-            font-size: 1.1em;
+            padding: 15px 35px;
+            font-size: 1.2em;
             font-weight: bold;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             cursor: pointer;
-            background: #93c5fd;
+            background: linear-gradient(135deg, #93c5fd, #60a5fa);
             color: #1e40af;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .level-buttons button:hover {
-            background: #60a5fa;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         .level-buttons button.active {
-            background: #2563eb;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
         }
 
         .feedback {
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 10px;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
             background: #fef3c7;
-            min-height: 50px;
-            display: none;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #fcd34d;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .feedback.show {
-            display: block;
+            opacity: 1;
         }
 
         .game-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
         .column h2 {
-            font-size: 1.3em;
-            margin-bottom: 15px;
+            font-size: 1.5em;
+            margin-bottom: 20px;
             color: #555;
+            text-align: center;
         }
 
         .items {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
         }
 
         .draggable {
-            padding: 15px;
-            border-radius: 10px;
+            padding: 18px;
+            border-radius: 12px;
             background: linear-gradient(135deg, #60a5fa, #3b82f6);
             color: white;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.2em;
             cursor: grab;
             user-select: none;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+            border: 3px solid transparent;
+        }
+
+        .draggable:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
         }
 
         .draggable:active {
             cursor: grabbing;
-            opacity: 0.8;
+            transform: scale(0.95);
         }
 
         .draggable.matched {
-            opacity: 0.3;
+            opacity: 0.25;
             cursor: not-allowed;
+            background: linear-gradient(135deg, #c1c1c1, #a0a0a0);
         }
 
         .drop-zone {
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px dashed #ccc;
+            padding: 18px;
+            border-radius: 12px;
+            border: 3px dashed #ccc;
             background: #f9fafb;
             font-weight: bold;
-            font-size: 1.1em;
-            min-height: 50px;
+            font-size: 1.2em;
+            color: #333;
+            min-height: 60px;
             display: flex;
             align-items: center;
-            transition: all 0.3s;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .drop-zone:hover {
+            background: #f3f4f6;
+            border-color: #b0b0b0;
         }
 
         .drop-zone.drag-over {
-            background: #e0f2fe;
+            background: linear-gradient(135deg, #e0f2fe, #cffafe);
             border-color: #0284c7;
             border-style: solid;
+            box-shadow: 0 0 20px rgba(2, 132, 199, 0.3);
+            transform: scale(1.02);
         }
 
         .drop-zone.matched {
-            background: #bbf7d0;
+            background: linear-gradient(135deg, #bbf7d0, #86efac);
             border-color: #22c55e;
             border-style: solid;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+            color: #15803d;
+            font-weight: bold;
         }
 
         .completion {
-            padding: 20px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 15px;
             background: linear-gradient(135deg, #34d399, #10b981);
             color: white;
             text-align: center;
-            font-size: 1.8em;
+            font-size: 2.2em;
             font-weight: bold;
             display: none;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            border: 3px solid #059669;
         }
 
         .completion.show {
             display: block;
-            animation: pulse 0.5s ease-in-out;
+            animation: bounce 0.6s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @media (max-width: 768px) {
             .game-area {
                 grid-template-columns: 1fr;
+                gap: 30px;
             }
             h1 {
-                font-size: 2em;
+                font-size: 2.5em;
+            }
+            .container {
+                padding: 30px;
             }
         }
     </style>
@@ -182,21 +227,21 @@
         <h1>🎯 Matching Game</h1>
 
         <div class="level-buttons">
-            <button class="level-btn active" data-level="easy">EASY</button>
-            <button class="level-btn" data-level="medium">MEDIUM</button>
-            <button class="level-btn" data-level="hard">HARD</button>
+            <button class="level-btn active" data-level="easy">🟢 EASY</button>
+            <button class="level-btn" data-level="medium">🟡 MEDIUM</button>
+            <button class="level-btn" data-level="hard">🔴 HARD</button>
         </div>
 
         <div class="feedback" id="feedback"></div>
 
         <div class="game-area">
             <div class="column">
-                <h2>Drag from here:</h2>
+                <h2>👈 Drag from here:</h2>
                 <div class="items" id="left-items"></div>
             </div>
 
             <div class="column">
-                <h2>Drop here:</h2>
+                <h2>👉 Drop here:</h2>
                 <div class="items" id="right-items"></div>
             </div>
         </div>
@@ -207,40 +252,40 @@
     <script>
         const gameData = {
             easy: [
-                { id: 1, left: "Shoes", right: "Socks" },
-                { id: 2, left: "Toothbrush", right: "Toothpaste" },
-                { id: 3, left: "Rain", right: "Umbrella" },
-                { id: 4, left: "Dog", right: "Bone" },
-                { id: 5, left: "Pen", right: "Paper" },
-                { id: 6, left: "Cup", right: "Saucer" },
-                { id: 7, left: "Bed", right: "Pillow" },
-                { id: 8, left: "Car", right: "Road" },
-                { id: 9, left: "Knife", right: "Fork" },
-                { id: 10, left: "Lock", right: "Key" }
+                { id: 1, left: "👟 Shoes", right: "🧦 Socks" },
+                { id: 2, left: "🪥 Toothbrush", right: "😁 Toothpaste" },
+                { id: 3, left: "☔ Rain", right: "☂️ Umbrella" },
+                { id: 4, left: "🐕 Dog", right: "🦴 Bone" },
+                { id: 5, left: "✏️ Pen", right: "📄 Paper" },
+                { id: 6, left: "☕ Cup", right: "🛏️ Saucer" },
+                { id: 7, left: "🛏️ Bed", right: "🛌 Pillow" },
+                { id: 8, left: "🚗 Car", right: "🛣️ Road" },
+                { id: 9, left: "🔪 Knife", right: "🍴 Fork" },
+                { id: 10, left: "🔐 Lock", right: "🔑 Key" }
             ],
             medium: [
-                { id: 11, left: "School", right: "Bag" },
-                { id: 12, left: "Classroom", right: "Desk" },
-                { id: 13, left: "Playground", right: "Ball" },
-                { id: 14, left: "Teacher", right: "Student" },
-                { id: 15, left: "Lunchbox", right: "Food" },
-                { id: 16, left: "Library", right: "Books" },
-                { id: 17, left: "Home", right: "Sofa" },
-                { id: 18, left: "Bathroom", right: "Soap" },
-                { id: 19, left: "Kitchen", right: "Fridge" },
-                { id: 20, left: "Bike", right: "Helmet" }
+                { id: 11, left: "🏫 School", right: "🎒 Bag" },
+                { id: 12, left: "🏫 Classroom", right: "📚 Desk" },
+                { id: 13, left: "🎪 Playground", right: "⚽ Ball" },
+                { id: 14, left: "👨‍🏫 Teacher", right: "👨‍🎓 Student" },
+                { id: 15, left: "🍱 Lunchbox", right: "🍎 Food" },
+                { id: 16, left: "📚 Library", right: "📖 Books" },
+                { id: 17, left: "🏠 Home", right: "🛋️ Sofa" },
+                { id: 18, left: "🚿 Bathroom", right: "🧼 Soap" },
+                { id: 19, left: "🍳 Kitchen", right: "🧊 Fridge" },
+                { id: 20, left: "🚲 Bike", right: "🪖 Helmet" }
             ],
             hard: [
-                { id: 21, left: "Sun", right: "Moon" },
-                { id: 22, left: "Fire", right: "Smoke" },
-                { id: 23, left: "Question", right: "Answer" },
-                { id: 24, left: "Day", right: "Night" },
-                { id: 25, left: "Hot", right: "Cold" },
-                { id: 26, left: "Buy", right: "Sell" },
-                { id: 27, left: "Parent", right: "Child" },
-                { id: 28, left: "Open", right: "Close" },
-                { id: 29, left: "Before", right: "After" },
-                { id: 30, left: "Give", right: "Take" }
+                { id: 21, left: "☀️ Sun", right: "🌙 Moon" },
+                { id: 22, left: "🔥 Fire", right: "💨 Smoke" },
+                { id: 23, left: "❓ Question", right: "✅ Answer" },
+                { id: 24, left: "🌅 Day", right: "🌙 Night" },
+                { id: 25, left: "🔥 Hot", right: "❄️ Cold" },
+                { id: 26, left: "🛒 Buy", right: "💰 Sell" },
+                { id: 27, left: "👨‍👩‍👧 Parent", right: "👧 Child" },
+                { id: 28, left: "🔓 Open", right: "🔒 Close" },
+                { id: 29, left: "⏪ Before", right: "⏩ After" },
+                { id: 30, left: "🎁 Give", right: "🤲 Take" }
             ]
         };
 
@@ -273,11 +318,11 @@
 
                 div.addEventListener("dragstart", (e) => {
                     draggedItem = item;
-                    div.style.opacity = "0.5";
+                    e.dataTransfer.effectAllowed = "copy";
                 });
 
                 div.addEventListener("dragend", (e) => {
-                    div.style.opacity = "1";
+                    draggedItem = null;
                 });
 
                 leftContainer.appendChild(div);
@@ -294,6 +339,7 @@
 
                 div.addEventListener("dragover", (e) => {
                     e.preventDefault();
+                    e.dataTransfer.dropEffect = "copy";
                     div.classList.add("drag-over");
                 });
 
